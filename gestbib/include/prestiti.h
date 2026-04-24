@@ -9,6 +9,7 @@
 typedef struct NodoPrestito NodoPrestito;
 
 typedef struct {
+    char   titolo[100];
     int     id;
     int     id_libro;
     int     id_utente;
