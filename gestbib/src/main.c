@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "libri.h"
-#include "utenti.h"
-#include "prestiti.h"
-#include "statistiche.h"
+#include "../include/libri.h"
+#include "../include/utenti.h"
+#include "../include/prestiti.h"
+#include "../include/statistiche.h"
 
 int main(){
     int scelta=0, scelta_utente=0,scelta_libri=0,scelta_prestiti=0, scelta_statistiche;
@@ -78,15 +78,15 @@ int main(){
                         break;
 
                     case 3:
-                        modificaLibro();
+                        modificaLibro(&catalogo);
                         break;
 
                     case 4:
-                        eliminaLibro();
+                        eliminaLibro(&catalogo);
                         break;
 
                     case 5:
-                        ricercaLibro();
+                        ricercaLibro(&catalogo);
                         break;
 
                     case 0:
