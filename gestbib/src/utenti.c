@@ -16,10 +16,9 @@ void aggiungiUtente(const char* nomeInserito, const char* cognomeInserito, const
     }
     listaUtenti = temp;// Aggiorna il puntatore all'array di utenti
     listaUtenti[numeroUtenti].id = ID++;// Assegna un ID univoco
-    strncpy(listaUtenti[numeroUtenti].nome, nomeInserito, 50);
-    strncpy(listaUtenti[numeroUtenti].cognome, cognomeInserito, 50);
-    strncpy(listaUtenti[numeroUtenti].email, emailInserito, 100);// Copia il nome inserito, assicurandosi di non superare la dimensione massima
-    listaUtenti[numeroUtenti].prestiti = NULL;// Inizializza la lista dei prestiti a NULL
+    strncpy(listaUtenti[numeroUtenti].nome, nomeInserito, 50);// Copia il nome inserito
+    strncpy(listaUtenti[numeroUtenti].cognome, cognomeInserito, 50);// Copia il cognome inserito
+    strncpy(listaUtenti[numeroUtenti].email, emailInserito, 100);// Copia l'email inserita
 
     numeroUtenti++; // Incrementa il numero di utenti
 }
@@ -33,16 +32,16 @@ void stampaListaUtenti(){
         return;
     }
 
-    for(int i=0; i< numeroUtenti; i++){
-        printf("ID: %d, Nome: %s, Cognome: %s, Email: %s\n", listaUtenti[i].id, listaUtenti[i].nome, listaUtenti[i].cognome, listaUtenti[i].email);
+    for(int i=0; i< numeroUtenti; i++){// Scorre l'array di utenti
+        printf("ID: %d, Nome: %s, Cognome: %s, Email: %s\n", listaUtenti[i].id, listaUtenti[i].nome, listaUtenti[i].cognome, listaUtenti[i].email);// Stampa le informazioni dell'utente
 
         NodoPrestito* corrente = listaUtenti[i].prestiti;// Puntatore per scorrere la lista dei prestiti dell'utente
         
-        if(corrente == NULL){
+        if(corrente == NULL){// Se l'utente non ha prestiti, stampa un messaggio e continua con il prossimo utente
             printf("  Nessun prestito per questo utente.\n");
         } else {
             printf("  Prestiti:\n");
-            while(corrente != NULL){
+            while(corrente != NULL){// Scorre la lista dei prestiti dell'utente
                 printf(" - Titolo: %s, Data di prestito: %ld\n", corrente->prestito.titolo, (long)corrente->prestito.data_prestito);// Stampa il titolo del libro e la data di prestito
                 corrente = corrente->next; // Passa al prestito successivo
             }
@@ -50,30 +49,30 @@ void stampaListaUtenti(){
     }
 }
 
-void eliminaUtente(int idCercato){
-    int pos = -1;
-    // Implementazione della funzione per eliminare un utente
-    for(int i=0; i<numeroUtenti; i++){
-        if(listaUtenti[i].id == idCercato){
+void eliminaUtente(int idCercato){// Implementazione della funzione per eliminare un utente
+    int pos = -1;// Variabile per memorizzare la posizione dell'utente da eliminare
+
+    for(int i=0; i<numeroUtenti; i++){// Scorre l'array di utenti
+        if(listaUtenti[i].id == idCercato){// Cerca l'utente con l'ID specificato
             pos = i;// Salva la posizione dell'utente da eliminare
             break;// Esce dal ciclo una volta trovato l'utente
 
         }
     }
-    if(pos == -1){
+    if(pos == -1){// Se l'utente non è stato trovato, stampa un messaggio
         printf("Utente con ID %d non trovato.\n", idCercato);
         return;
     }
     // Elimina l'utente dall'array
-    for(int i=pos; i<numeroUtenti-1; i++){
-        listaUtenti[i] = listaUtenti[i+1];
+    for(int i=pos; i<numeroUtenti-1; i++){// Scorre gli utenti successivi a partire dalla posizione dell'utente da eliminare
+        listaUtenti[i] = listaUtenti[i+1];// Sposta gli utenti successivi per coprire la posizione dell'utente eliminato
     }
-    numeroUtenti--;
-    if(numeroUtenti == 0){
+    numeroUtenti--;// Decrementa il numero di utenti
+    if(numeroUtenti == 0){// Se non ci sono più utenti, libera la memoria e imposta il puntatore a NULL
         free(listaUtenti);// Libera la memoria se non ci sono più utenti
         listaUtenti = NULL;
     } else {
-        Utente* temp = (Utente*)realloc(listaUtenti, numeroUtenti * sizeof(Utente));
+        Utente* temp = (Utente*)realloc(listaUtenti, numeroUtenti * sizeof(Utente));// Ridimensiona l'array di utenti dopo l'eliminazione
         if (temp != NULL) {
             listaUtenti = temp;// Aggiorna il puntatore all'array di utenti
         }
