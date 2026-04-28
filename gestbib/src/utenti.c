@@ -4,80 +4,84 @@
 #include "../include/libri.h"
 #include <stdlib.h>
 #include <string.h>
-int ID = 0;
-Utente* listaUtenti = NULL;
-int numeroUtenti = 0;
 
-void aggiungiUtente(const char* nomeInserito, const char* cognomeInserito, const char* emailInserito){
-    Utente* temp = (Utente*)realloc(listaUtenti, (numeroUtenti +1) * sizeof(Utente));
-    if (temp == NULL) {
-        printf("Errore di allocazione della memoria.\n");
-        return;
+void inizializzaElenco(ElencoUtenti *elenco) {
+    elenco->num = 0;
+    elenco->capacita = 10;
+    elenco->utenti = malloc(elenco->capacita * sizeof(Utente));
+}
+
+void aggiungiUtente(ElencoUtenti *elenco){
+    char nome[50], cognome[50], email[100];
+    printf("Nome: ");
+    scanf(" %[^\n]", nome);
+    printf("Cognome: ");
+    scanf(" %[^\n]", cognome);
+    printf("Email: ");
+    scanf(" %[^\n]", email);
+    
+    if (elenco->num == elenco->capacita) {
+        elenco->capacita *= 2;
+        elenco->utenti = realloc(elenco->utenti, elenco->capacita * sizeof(Utente));
     }
-    listaUtenti = temp;// Aggiorna il puntatore all'array di utenti
-    listaUtenti[numeroUtenti].id = ID++;// Assegna un ID univoco
-    strncpy(listaUtenti[numeroUtenti].nome, nomeInserito, 50);// Copia il nome inserito
-    strncpy(listaUtenti[numeroUtenti].cognome, cognomeInserito, 50);// Copia il cognome inserito
-    strncpy(listaUtenti[numeroUtenti].email, emailInserito, 100);// Copia l'email inserita
+    
+    elenco->utenti[elenco->num].id = elenco->num + 1;
+    strcpy(elenco->utenti[elenco->num].nome, nome);
+    strcpy(elenco->utenti[elenco->num].cognome, cognome);
+    strcpy(elenco->utenti[elenco->num].email, email);
+    elenco->utenti[elenco->num].prestiti = NULL;
+    elenco->utenti[elenco->num].num_prestiti = 0;
 
-    numeroUtenti++; // Incrementa il numero di utenti
+    elenco->num++;
+    printf("Utente aggiunto con successo (ID: %d)\n", elenco->utenti[elenco->num-1].id);
 }
 
 
-void stampaListaUtenti(){
-    // Implementazione della funzione per stampare la lista degli utenti
-
-    if(numeroUtenti == 0){//controllo se l'array è vuoto
+void stampaListaUtenti(ElencoUtenti *elenco){
+    if(elenco->num == 0){
         printf("Nessun utente presente.\n");
         return;
     }
 
-    for(int i=0; i< numeroUtenti; i++){// Scorre l'array di utenti
-        printf("ID: %d, Nome: %s, Cognome: %s, Email: %s\n", listaUtenti[i].id, listaUtenti[i].nome, listaUtenti[i].cognome, listaUtenti[i].email);// Stampa le informazioni dell'utente
+    for(int i=0; i< elenco->num; i++){
+        printf("ID: %d, Nome: %s, Cognome: %s, Email: %s\n", elenco->utenti[i].id, elenco->utenti[i].nome, elenco->utenti[i].cognome, elenco->utenti[i].email);
 
-        NodoPrestito* corrente = listaUtenti[i].prestiti;// Puntatore per scorrere la lista dei prestiti dell'utente
+        NodoPrestito* corrente = elenco->utenti[i].prestiti;
         
-        if(corrente == NULL){// Se l'utente non ha prestiti, stampa un messaggio e continua con il prossimo utente
+        if(corrente == NULL){
             printf("  Nessun prestito per questo utente.\n");
         } else {
             printf("  Prestiti:\n");
-            while(corrente != NULL){// Scorre la lista dei prestiti dell'utente
-                printf(" - Titolo: %s, Data di prestito: %ld\n", corrente->prestito.titolo, (long)corrente->prestito.data_prestito);// Stampa il titolo del libro e la data di prestito
-                corrente = corrente->next; // Passa al prestito successivo
+            while(corrente != NULL){
+                printf(" - Titolo: %s, Data di prestito: %ld\n", corrente->titolo_libro, (long)corrente->data_prestito);
+                corrente = corrente->next;
             }
         }
     }
 }
 
-void eliminaUtente(int idCercato){// Implementazione della funzione per eliminare un utente
-    int pos = -1;// Variabile per memorizzare la posizione dell'utente da eliminare
+void eliminaUtente(ElencoUtenti *elenco){
+    int idCercato;
+    printf("ID dell'utente da eliminare: ");
+    scanf("%d", &idCercato);
+    
+    int pos = -1;
 
-    for(int i=0; i<numeroUtenti; i++){// Scorre l'array di utenti
-        if(listaUtenti[i].id == idCercato){// Cerca l'utente con l'ID specificato
-            pos = i;// Salva la posizione dell'utente da eliminare
-            break;// Esce dal ciclo una volta trovato l'utente
-
+    for(int i=0; i<elenco->num; i++){
+        if(elenco->utenti[i].id == idCercato){
+            pos = i;
+            break;
         }
     }
-    if(pos == -1){// Se l'utente non è stato trovato, stampa un messaggio
+    if(pos == -1){
         printf("Utente con ID %d non trovato.\n", idCercato);
         return;
     }
     // Elimina l'utente dall'array
-    for(int i=pos; i<numeroUtenti-1; i++){// Scorre gli utenti successivi a partire dalla posizione dell'utente da eliminare
-        listaUtenti[i] = listaUtenti[i+1];// Sposta gli utenti successivi per coprire la posizione dell'utente eliminato
+    for(int i=pos; i<elenco->num-1; i++){
+        elenco->utenti[i] = elenco->utenti[i+1];
     }
-    numeroUtenti--;// Decrementa il numero di utenti
-    if(numeroUtenti == 0){// Se non ci sono più utenti, libera la memoria e imposta il puntatore a NULL
-        free(listaUtenti);// Libera la memoria se non ci sono più utenti
-        listaUtenti = NULL;
-    } else {
-        Utente* temp = (Utente*)realloc(listaUtenti, numeroUtenti * sizeof(Utente));// Ridimensiona l'array di utenti dopo l'eliminazione
-        if (temp != NULL) {
-            listaUtenti = temp;// Aggiorna il puntatore all'array di utenti
-        }
-    }
-    
-
+    elenco->num--;
+    printf("Utente eliminato con successo.\n");
 }
 

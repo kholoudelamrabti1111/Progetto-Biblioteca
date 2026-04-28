@@ -19,7 +19,11 @@ typedef struct {
 } Prestito;
 
 struct NodoPrestito {
-    Prestito            prestito;
+    int id_libro;
+    char titolo_libro[100];
+    time_t data_prestito;
+    time_t data_scadenza;
+    int restituito;
     struct NodoPrestito *next;
 };
 
@@ -32,4 +36,9 @@ typedef struct {
     NodoNotifica *testa;
     NodoNotifica *coda;
 } CodaNotifiche;
+
+// dichiarazione funzioni
+void nuovoPrestito(CatalogoLibri *catalogo, ElencoUtenti *elenco);
+void restituzioneLibro(CatalogoLibri *catalogo, ElencoUtenti *elenco);
+void stampaListaPrestitiScaduti(ElencoUtenti *elenco);
 

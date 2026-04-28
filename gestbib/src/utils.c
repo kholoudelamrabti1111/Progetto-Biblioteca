@@ -49,3 +49,55 @@ void stampa_statistiche(Libro **catalogo, int n_libri, Utente *utenti, int n_ute
     printf("Prestiti attualmente in corso: %d\n", prestiti_attivi);
     printf("---------------------------\n");
 }
+
+void calcolaStatistiche(Libro** catalogo, int numLibri, Utente** utenti, int numUtenti) {
+    int* conteggioLibri = calloc(numLibri, sizeof(int));
+    int resituiti = 0, totali = 0;
+
+    for (int i = 0; i < numUtenti; i++) {
+        NodoPrestito* corrente = utenti[i]->prestiti;
+        while (corrente != NULL) {
+            totali++;
+            if (corrente->restituito) resituiti++; // Assumendo un flag restituito
+            
+            // Trova l'indice del libro nel catalogo per incrementare il contatore
+            for(int j=0; j<numLibri; j++) {
+                if (catalogo[j]->id == corrente->id_libro) {
+                    conteggioLibri[j]++;
+                    break;
+                }
+            }
+            corrente = corrente->next;// Passa al prestito successivo
+        }
+    }
+
+    // Qui cerchi il max in conteggioLibri e stampi...
+    free(conteggioLibri);
+}
+void stampaBarra(int valore, int scala) {// Funzione per stampare una barra di testo proporzionale al valore dato, scalato da un fattore    
+    printf("[");// Inizio della barra
+    for (int i = 0; i < valore / scala; i++) {// Stampa un simbolo '|' per ogni unità di scala nel valore
+        printf("|");//
+    }
+    printf("] (%d)\n", valore);// Fine della barra e stampa del valore numerico tra parentesi
+}
+
+void libroPiuPrestato() {
+    printf("Funzione libroPiuPrestato non implementata.\n");
+}
+
+void utentePiuPrestiti() {
+    printf("Funzione utentePiuPrestiti non implementata.\n");
+}
+
+void storicoPrestiti() {
+    printf("Funzione storicoPrestiti non implementata.\n");
+}
+
+void tassoRestituzione() {
+    printf("Funzione tassoRestituzione non implementata.\n");
+}
+
+void generiPiuRichiesti() {
+    printf("Funzione generiPiuRichiesti non implementata.\n");
+}

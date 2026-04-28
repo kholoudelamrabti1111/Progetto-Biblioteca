@@ -8,6 +8,9 @@
 int main(){
     int scelta=0, scelta_utente=0,scelta_libri=0,scelta_prestiti=0, scelta_statistiche;
     CatalogoLibri catalogo;
+    inizializzaCatalogo(&catalogo);
+    ElencoUtenti elenco;
+    inizializzaElenco(&elenco);
     do{
         printf("\n---- Menù Biblioteca ----\n");
         printf("In che menù vuoi andare?\n");
@@ -34,15 +37,15 @@ int main(){
 
                 switch(scelta_utente){
                     case 1:
-                        aggiungiUtente();
+                        aggiungiUtente(&elenco);
                         break;
 
                     case 2:
-                        stampaListaUtenti();
+                        stampaListaUtenti(&elenco);
                         break;
 
                     case 3:
-                        eliminaUtente();
+                        eliminaUtente(&elenco);
                         break;
 
                     case 0:
@@ -112,15 +115,15 @@ int main(){
 
                 switch(scelta_prestiti){
                     case 1:
-                        nuovoPrestito();
+                        nuovoPrestito(&catalogo, &elenco);
                         break;
 
                     case 2:
-                        restituzioneLibro();
+                        restituzioneLibro(&catalogo, &elenco);
                         break;
 
                     case 3:
-                        stampaListaPrestitiScaduti();
+                        stampaListaPrestitiScaduti(&elenco);
                         break;
 
                     case 0:
