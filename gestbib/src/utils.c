@@ -11,13 +11,13 @@ void ordina_libri(Libro **catalogo, int n) {
     for (int i = 0; i < n - 1; i++) {
         int min_idx = i;
         for (int j = i + 1; j < n; j++) {
-            if (strcmp(catalogo[j]->titolo, catalogo[min_idx]->titolo) < 0)
-                min_idx = j;
+            if (strcmp(catalogo[j]->titolo, catalogo[min_idx]->titolo) < 0)//Confronta i titoli dei libri usando strcmp, se il titolo del libro j è alfabeticamente precedente a quello del libro min_idx
+                min_idx = j;//Trova l'indice del libro con il titolo più piccolo
         }
         // Scambio solo i puntatori
-        Libro *temp = catalogo[min_idx];
-        catalogo[min_idx] = catalogo[i];
-        catalogo[i] = temp;
+        Libro *temp = catalogo[min_idx];//Salva il puntatore al libro con titolo più piccolo
+        catalogo[min_idx] = catalogo[i];//Sposta il puntatore del libro corrente al posto del libro con titolo più piccolo
+        catalogo[i] = temp;//Posiziona il puntatore del libro con titolo più piccolo al posto del libro corrente
     }
 }
 
