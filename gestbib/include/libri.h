@@ -18,3 +18,13 @@ typedef struct {
     int    capacita;
 } CatalogoLibri;
 
+// dichiarazione funzioni
+char *duplicaStringa(const char *s);
+void espandiCatalogo(CatalogoLibri *catalogo);
+void inizializzaCatalogo(CatalogoLibri *catalogo);
+void aggiungiLibro(CatalogoLibri *catalogo);
+void stampaListaLibri(CatalogoLibri *catalogo);
+void modificaLibro(CatalogoLibri *catalogo);
+void eliminaLibro(CatalogoLibri *catalogo);
+void ricercaLibro(CatalogoLibri *catalogo);
+
