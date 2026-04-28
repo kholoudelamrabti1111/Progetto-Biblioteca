@@ -7,7 +7,7 @@
 
 /* Duplica una stringa allocando dinamicamente la memoria necessaria */
 char *duplicaStringa(const char *s) {
-    char p = malloc(strlen(s) + 1); / +1 per il carattere terminatore '\0' */
+    char *p = malloc(strlen(s) + 1); /* +1 per il carattere terminatore '\0' */
     if (p) strcpy(p, s);             /* Copia la stringa solo se malloc ha avuto successo */
     return p;
 }
@@ -33,28 +33,27 @@ void aggiungiLibro(CatalogoLibri *catalogo) {
     if (catalogo->num == catalogo->capacita)
         espandiCatalogo(catalogo);
 
-    Libro l = malloc(sizeof(Libro)); / Alloca temporaneamente un libro */
+    Libro l; /* Alloca temporaneamente un libro */
 
-    l->id = catalogo->num + 1; /* L'ID è basato sulla posizione corrente */
+    l.id = catalogo->num + 1; /* L'ID è basato sulla posizione corrente */
 
     printf("Titolo: ");
     scanf(" %[^\n]", buf); /* Legge l'intera riga inclusi gli spazi */
-    l->titolo = duplicaStringa(buf);
+    l.titolo = duplicaStringa(buf);
 
     printf("Autore: ");
     scanf(" %[^\n]", buf);
-    l->autore = duplicaStringa(buf);
+    l.autore = duplicaStringa(buf);
 
     printf("Genere: ");
     scanf(" %[^\n]", buf);
-    l->genere = duplicaStringa(buf);
+    l.genere = duplicaStringa(buf);
 
     printf("Copie totali: ");
-    scanf("%d", &l->copie_totali);
-    l->copie_disponibili = l->copie_totali; /* All'inizio tutte le copie sono disponibili */
+    scanf("%d", &l.copie_totali);
+    l.copie_disponibili = l.copie_totali; /* All'inizio tutte le copie sono disponibili */
 
-    catalogo->libri[catalogo->num] = l; / Copia il libro nell'array (per valore) */
-    free(l);                              /* Libera il puntatore temporaneo */
+    catalogo->libri[catalogo->num] = l; /* Copia il libro nell'array (per valore) */
     catalogo->num++;
     printf("Libro aggiunto con successo (ID: %d)\n", catalogo->libri[catalogo->num - 1].id);
 }
