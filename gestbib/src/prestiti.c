@@ -1,207 +1,199 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "../include/prestiti.h"
- 
-// cerca un utente nell'elenco tramite il suo id e restituisce il puntatore
+#include <stdio.h>        
+#include <stdlib.h>       
+#include <string.h>       
+#include "../include/prestiti.h"  
+
+
 Utente* cercaUtente(ElencoUtenti *elenco, int id){
-    for(int i=0; i<elenco->num; i++)
-        if(elenco->utenti[i].id == id){
-            return &elenco->utenti[i];
+    for(int i=0; i<elenco->num; i++)         
+        if(elenco->utenti[i].id == id){      
+            return &elenco->utenti[i];       // restituisce il puntatore all'utente trovato
         }
-    return NULL;
+    return NULL;                             
 }
- 
-// cerca un libro nel catalogo tramite il suo id e restituisce il puntatore
+
+
 Libro* cercaLibro(CatalogoLibri *catalogo, int id){
-    for(int i=0; i<catalogo->num; i++)
-        if(catalogo->libri[i].id == id){
-            return &catalogo->libri[i];
+    for(int i=0; i<catalogo->num; i++)       
+        if(catalogo->libri[i].id == id){     
+            return &catalogo->libri[i];      // restituisce il puntatore al libro trovato
         }
-    return NULL;
+    return NULL;                             
 }
- 
-// stampa una data in formato dd/mm/yyyy partendo da un time_t
+
+
 void stampData(time_t t){
-    struct tm *info = localtime(&t);
-    printf("%02d/%02d/%04d", info->tm_mday, info->tm_mon + 1, info->tm_year + 1900);
+    struct tm *info = localtime(&t);         // converte il timestamp in struttura con giorno/mese/anno
+    printf("%02d/%02d/%04d",                 // formato con zeri iniziali: es. 05/03/2025
+        info->tm_mday,                       // giorno del mese (1-31)
+        info->tm_mon + 1,                    // mese: tm_mon va da 0 a 11, quindi si aggiunge 1
+        info->tm_year + 1900);               // anno: tm_year conta da 1900, quindi si aggiunge 1900
 }
- 
-// crea un nuovo nodo prestito e lo inserisce in testa alla lista dell'utente
+
+
 void aggiungiNodoPrestito(Utente *u, int id_libro, char *titolo){
-    NodoPrestito *nuovo = (NodoPrestito *)malloc(sizeof(NodoPrestito));
-    if(nuovo==NULL){
-        printf("Errore di allocazione memoria.\n");
-        return;
+    NodoPrestito *nuovo = (NodoPrestito *)malloc(sizeof(NodoPrestito));  // alloca memoria per il nuovo nodo
+    if(nuovo==NULL){                                   
+        printf("Errore di allocazione memoria.\n");    
+        return;                                        
     }
- 
-    nuovo->id_libro = id_libro;
-    strncpy(nuovo->titolo_libro, titolo, 99);
-    nuovo->titolo_libro[99] = '\0'; // terminatore di sicurezza
- 
-    nuovo->data_prestito = time(NULL); // data di oggi
-    nuovo->data_scadenza = nuovo->data_prestito+(30 * 24 * 60 * 60); // oggi + 30 giorni in secondi
-    nuovo->restituito = 0; // il libro non e' ancora stato restituito
-    nuovo->next = u->prestiti; // inserimento in testa alla lista
-    u->prestiti = nuovo;
-    u->num_prestiti++;
+
+    nuovo->id_libro = id_libro;                        // salva l'id del libro nel nodo
+    strncpy(nuovo->titolo_libro, titolo, 99);          // copia al massimo 99 caratteri del titolo
+    nuovo->titolo_libro[99] = '\0';                    // aggiunge manualmente il terminatore di stringa nella 99esima posizione
+
+    nuovo->data_prestito = time(NULL);                 // registra la data attuale come data di prestito
+    nuovo->data_scadenza = nuovo->data_prestito        // calcola la scadenza
+                           +(30 * 24 * 60 * 60);       // aggiunge 30 giorni espressi in secondi (30g × 24h × 60m × 60s)
+    nuovo->restituito = 0;                             // flag: 0=libro non ancora restituito
+    nuovo->next = u->prestiti;                         // il nuovo nodo punta al vecchio primo nodo (inserimento in testa)
+    u->prestiti = nuovo;                               // il puntatore alla lista ora punta al nuovo nodo
+    u->num_prestiti++;                                 // incrementa il contatore dei prestiti attivi dell'utente
 }
- 
-// gestisce il prestito di un libro ad un utente
+
+
 void nuovoPrestito(CatalogoLibri *catalogo, ElencoUtenti *elenco){
-    int id_utente, id_libro;
- 
-    // stampo tutti i libri del catalogo con le copie disponibili
+    int id_utente, id_libro;                           
+
+    // stampa l'intestazione della tabella dei libri
     printf("\n--- Lista Libri ---\n");
-    printf("%-5s %-30s %-20s %-15s %-10s\n", "ID", "Titolo", "Autore", "Genere", "Disponibili");
+    printf("%-5s %-30s %-20s %-15s %-10s\n",          // formattazione colonne con larghezza fissa
+        "ID", "Titolo", "Autore", "Genere", "Disponibili");
     printf("-------------------------------------------------------------------------------------\n");
- 
-    for (int i = 0; i < catalogo->num; i++) {
-        printf("%-5d %-30s %-20s %-15s %-10d\n",
+
+    for (int i = 0; i < catalogo->num; i++) {          
+        printf("%-5d %-30s %-20s %-15s %-10d\n",       // stampa ogni libro allineato nelle colonne
             catalogo->libri[i].id,
             catalogo->libri[i].titolo,
             catalogo->libri[i].autore,
             catalogo->libri[i].genere,
             catalogo->libri[i].copie_disponibili);
     }
- 
-    // chiedo l'id dell'utente e lo cerco nell'elenco
+
     printf("\nInserisci il tuo ID utente: ");
-    scanf("%d", &id_utente);
- 
-    Utente *utente_scelto = cercaUtente(elenco, id_utente);
-    if (!utente_scelto) {
+    scanf("%d", &id_utente);                           // legge l'id utente da tastiera
+
+    Utente *utente_scelto = cercaUtente(elenco, id_utente);  // cerca l'utente nell'elenco
+    if (!utente_scelto) {                              // se non trovato
         printf("Utente non trovato!\n");
-        return;
+        return;                                        
     }
- 
-    // chiedo l'id del libro e lo cerco nel catalogo
+
     printf("Inserisci l'ID del libro che vuoi prendere in prestito: ");
-    scanf("%d", &id_libro);
- 
-    Libro *libro_scelto=cercaLibro(catalogo, id_libro);
-    if(!libro_scelto){
+    scanf("%d", &id_libro);                            // legge l'id libro da tastiera
+
+    Libro *libro_scelto = cercaLibro(catalogo, id_libro);    // cerca il libro nel catalogo
+    if(!libro_scelto){                                 // se non trovato
         printf("Libro non trovato.\n");
-        return;
+        return;                                        
     }
- 
-    // controllo se ci sono copie disponibili
-    if(libro_scelto->copie_disponibili<=0) {
+
+    if(libro_scelto->copie_disponibili<=0) {           // controlla se esistono copie disponibili
         printf("Non ci sono copie disponibili per \"%s\".\n", libro_scelto->titolo);
-        return;
+        return;                                        
     }
- 
-    // controllo se gia' in prestito
+
+    // scorre la lista dei prestiti dell'utente per vedere se ha già quel libro
     for(NodoPrestito *tmp = utente_scelto->prestiti; tmp; tmp = tmp->next){
-        if(tmp->id_libro == id_libro && tmp->restituito == 0){
+        if(tmp->id_libro == id_libro && tmp->restituito == 0){  // stesso libro e non ancora restituito
             printf("Hai gia' questo libro in prestito.\n");
-            return;
+            return;                                    
         }
     }
- 
-    // aggiungo il prestito e aggiorno le copie disponibili
+
     aggiungiNodoPrestito(utente_scelto, libro_scelto->id, libro_scelto->titolo);
-    libro_scelto->copie_disponibili--;
- 
-    // stampo il riepilogo del prestito
+    libro_scelto->copie_disponibili--;                 // decrementa le copie disponibili nel catalogo
+
+    // stampa il riepilogo del prestito appena creato
     printf("\nPrestito effettuato con successo!\n");
     printf("Libro: %s\n", libro_scelto->titolo);
     printf("Data prestito: ");
-    stampData(utente_scelto->prestiti->data_prestito);
+    stampData(utente_scelto->prestiti->data_prestito); // data odierna (nodo in testa = appena inserito)
     printf("\nData scadenza: ");
-    stampData(utente_scelto->prestiti->data_scadenza);
+    stampData(utente_scelto->prestiti->data_scadenza); // data odierna + 30 giorni
     printf("\n");
 }
- 
- 
-// gestisce la restituzione di un libro da parte di un utente
+
 void restituzioneLibro(CatalogoLibri *catalogo, ElencoUtenti *elenco){
     int id_utente, id_libro;
- 
-    // chiedo l'id dell'utente e lo cerco nell'elenco
+
     printf("\n---Restituzione Libro---\n");
     printf("Inserisci il tuo ID utente: ");
-    scanf("%d", &id_utente);
- 
-    Utente *utente_scelto = cercaUtente(elenco, id_utente);
-    if (!utente_scelto) {
+    scanf("%d", &id_utente);                           
+
+    Utente *utente_scelto = cercaUtente(elenco, id_utente);  // cerca l'utente
+    if (!utente_scelto) {                              
         printf("Utente non trovato!\n");
         return;
     }
- 
-    // stampo i prestiti attivi dell'utente
-    printf("\nPrestiti attivi di %s %s:\n", utente_scelto->nome, utente_scelto->cognome);
- 
-    NodoPrestito *tmp = utente_scelto->prestiti;
-    int ha_prestiti = 0;
- 
-    while(tmp){
-        if(!tmp->restituito){
+
+    printf("\nPrestiti attivi di %s %s:\n",
+        utente_scelto->nome, utente_scelto->cognome);  // nome e cognome dell'utente
+
+    NodoPrestito *tmp = utente_scelto->prestiti;       // scorre la lista
+    int ha_prestiti = 0;                               // flag per controllare se sono stati trovati prestiti
+
+    while(tmp){                                        
+        if(!tmp->restituito){                          // stampa solo i prestiti non ancora restituiti
             printf("%d - %s\n", tmp->id_libro, tmp->titolo_libro);
-            ha_prestiti = 1;
+            ha_prestiti = 1;                           
+        tmp=tmp->next;                                 // passa al nodo successivo
         }
-        tmp=tmp->next;
     }
- 
-    // se non ha prestiti attivi esco
-    if(!ha_prestiti){
+
+    if(!ha_prestiti){                                  // se nessun prestito attivo trovato
         printf("Non hai prestiti attivi.\n");
-        return;
+        return;                                        
     }
- 
-    // chiedo quale libro vuole restituire
+
     printf("\nInserisci l'ID del libro da restituire: ");
-    scanf("%d", &id_libro);
- 
-    // cerco il prestito nella lista e lo segno come restituito
+    scanf("%d", &id_libro);                            
+
+    // scorre di nuovo la lista cercando il prestito corrispondente
     for(tmp = utente_scelto->prestiti; tmp; tmp = tmp->next){
-        if(tmp->id_libro == id_libro && !tmp->restituito){
-            tmp->restituito = 1;
-            utente_scelto->num_prestiti--;
- 
-            // aggiorno le copie disponibili nel catalogo
-            Libro *libro = cercaLibro(catalogo, id_libro);
+        if(tmp->id_libro == id_libro && !tmp->restituito){   // se trova il prestito attivo corretto
+            tmp->restituito = 1;                             // segna il prestito come restituito
+            utente_scelto->num_prestiti--;                   // decrementa il contatore dei prestiti attivi
+
+            Libro *libro = cercaLibro(catalogo, id_libro);   // cerca il libro nel catalogo
             if(libro){
-                libro->copie_disponibili++;
+                libro->copie_disponibili++;                  // aumenta le copie disponibili dopo che è stato reso
             }
- 
+
             printf("\nLibro \"%s\" restituito con successo.\n", tmp->titolo_libro);
-            return;
+            return;                                          
         }
     }
- 
-    printf("Prestito non trovato o gia' restituito.\n");
+
+    printf("Prestito non trovato o gia' restituito.\n");     // il libro non era in prestito o era già reso
 }
- 
- 
-// stampa tutti i prestiti scaduti e non ancora restituiti
+
 void stampaListaPrestitiScaduti(ElencoUtenti *elenco){
-    time_t oggi = time(NULL); // prendo la data di oggi
-    int trovati = 0;
- 
+    time_t oggi = time(NULL);                          // ottiene la data odierna
+    int trovati = 0;                                   
+
     printf("\n---Prestiti Scaduti---\n");
-    printf("%-20s %-20s %-30s %-15s\n", "Nome", "Cognome", "Titolo Libro", "Scaduto il");
+    printf("%-20s %-20s %-30s %-15s\n",                // intestazione tabella con colonne fisse
+        "Nome", "Cognome", "Titolo Libro", "Scaduto il");
     printf("------------------------------------------------------------------------------\n");
- 
-    // scorro tutti gli utenti e tutti i loro prestiti
-    for(int i=0; i<elenco->num; i++){
-        for(NodoPrestito *tmp = elenco->utenti[i].prestiti; tmp; tmp = tmp->next){
-            // stampo solo i prestiti non restituiti e con data scadenza passata
-            if(!tmp->restituito && tmp->data_scadenza < oggi){
+
+    for(int i=0; i<elenco->num; i++){                  
+        for(NodoPrestito *tmp = elenco->utenti[i].prestiti; tmp; tmp = tmp->next){ 
+            if(!tmp->restituito && tmp->data_scadenza < oggi){  // prestito non restituito E scadenza già passata
                 printf("%-20s %-20s %-30s ",
                     elenco->utenti[i].nome,
                     elenco->utenti[i].cognome,
                     tmp->titolo_libro);
-                stampData(tmp->data_scadenza);
+                stampData(tmp->data_scadenza);         // stampa la data di scadenza formattata
                 printf("\n");
-                trovati++;
+                trovati++;                             // incrementa il contatore
             }
         }
     }
- 
+
     if(!trovati){
-        printf("Nessun prestito scaduto.\n");
+        printf("Nessun prestito scaduto.\n");          // messaggio se non ci sono prestiti scaduti
     }else{
-        printf("\nTotale prestiti scaduti: %d\n", trovati);
+        printf("\nTotale prestiti scaduti: %d\n", trovati);  // prestiti scaduti trovati
     }
 }
