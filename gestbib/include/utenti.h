@@ -1,8 +1,11 @@
 #pragma once
 
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 // Struttura che rappresenta un utente della biblioteca
 typedef struct NodoPrestito NodoPrestito;
+
 
 typedef struct {
     int id;

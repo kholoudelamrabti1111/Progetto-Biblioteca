@@ -53,7 +53,9 @@ void stampaListaUtenti(ElencoUtenti *elenco){
         } else {
             printf("  Prestiti:\n");
             while(corrente != NULL){
-                printf(" - Titolo: %s, Data di prestito: %ld\n", corrente->titolo_libro, (long)corrente->data_prestito);
+                printf(" - Titolo: %s, Data di prestito: ", corrente->titolo_libro);
+                stampData(corrente->data_prestito);
+                printf("\n");
                 corrente = corrente->next;
             }
         }
@@ -77,6 +79,15 @@ void eliminaUtente(ElencoUtenti *elenco){
         printf("Utente con ID %d non trovato.\n", idCercato);
         return;
     }
+
+    // Libera la lista dei prestiti dell'utente prima di eliminarlo
+    NodoPrestito *tmp = elenco->utenti[pos].prestiti;
+    while(tmp != NULL){
+        NodoPrestito *next = tmp->next;
+        free(tmp);
+        tmp = next;
+    }
+
     // Elimina l'utente dall'array
     for(int i=pos; i<elenco->num-1; i++){
         elenco->utenti[i] = elenco->utenti[i+1];
@@ -84,4 +95,3 @@ void eliminaUtente(ElencoUtenti *elenco){
     elenco->num--;
     printf("Utente eliminato con successo.\n");
 }
-

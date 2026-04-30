@@ -151,23 +151,23 @@ int main(){
 
                 switch(scelta_statistiche){
                     case 1:
-                        libroPiuPrestato();
+                        libroPiuPrestato(&catalogo, &elenco);
                         break;
 
                     case 2:
-                        utentePiuPrestiti();
+                        utentePiuPrestiti(&elenco);
                         break;
 
                     case 3:
-                        storicoPrestiti();
+                        storicoPrestiti(&elenco );
                         break;
 
                     case 4:
-                        tassoRestituzione();
+                        tassoRestituzione(&catalogo);
                         break;
 
                     case 5:
-                        generiPiuRichiesti();
+                        generiPiuRichiesti(&catalogo);
                         break;
 
                     case 0:

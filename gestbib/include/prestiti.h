@@ -1,10 +1,13 @@
 #pragma once
 
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include "libri.h"
 #include "utenti.h"
+
+void stampData(time_t t);
 
 typedef struct NodoPrestito NodoPrestito;
 

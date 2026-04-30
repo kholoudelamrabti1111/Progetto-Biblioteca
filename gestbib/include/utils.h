@@ -1,13 +1,11 @@
 #include <stdio.h>
-#include "../include/libri.h"
-#include "../include/utenti.h"
-#include "../include/prestiti.h"
 #include <stdlib.h>
 #include <string.h>
 
 // Dichiarazione funzioni
-void libroPiuPrestato();
-void utentePiuPrestiti();
-void storicoPrestiti();
-void tassoRestituzione();
-void generiPiuRichiesti();
+// utils.h
+void libroPiuPrestato(CatalogoLibri *catalogo, ElencoUtenti *elenco);
+void utentePiuPrestiti(ElencoUtenti *elenco);
+void storicoPrestiti(ElencoUtenti *elenco);
+void tassoRestituzione(CatalogoLibri *catalogo);
+void generiPiuRichiesti(CatalogoLibri *catalogo);
