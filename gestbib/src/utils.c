@@ -71,7 +71,7 @@ void calcolaStatistiche(Libro** catalogo, int numLibri, Utente** utenti, int num
     free(conteggioLibri);
 }
 
-void stampaBarra(int valore, int scala) {                                    // Funzione per stampare una barra di testo proporzionale al valore dato, scalato da un fattore
+void stampaBarra(int valore, int scala) {                                 // Funzione per stampare una barra di testo proporzionale al valore dato, scalato da un fattore
     printf("[");                                                          // Inizio della barra
     for (int i = 0; i < valore / scala; i++) {                               // Stampa un simbolo '|' per ogni unità di scala nel valore
         printf("|");                                                      // Disegna un segmento della barra

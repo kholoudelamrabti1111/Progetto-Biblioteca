@@ -12,7 +12,7 @@ int main(){
     ElencoUtenti elenco;
     inizializzaElenco(&elenco);
     do{
-        printf("\n---- Menù Biblioteca ----\n");
+        printf("\n---- Menù Biblioteca ----\n");            //menù biblioteca principale con collegamenti a menù secondari
         printf("In che menù vuoi andare?\n");
         printf("1. Menù Utenti\n");
         printf("2. Menù Libri\n");
@@ -27,7 +27,7 @@ int main(){
 
         case 1:
             do{
-                printf("\n===Menù Utenti===\n");
+                printf("\n===Menù Utenti===\n");            //menù secondario utenti con funzioni per la gestione utenti
                 printf("1. Aggiungi utente\n");
                 printf("2. Stampa lista utenti\n");
                 printf("3. Eliminazione utente\n");
@@ -61,7 +61,7 @@ int main(){
 
         case 2:
             do{
-                printf("\n===Menù Libri===\n");
+                printf("\n===Menù Libri===\n");            //menù secondario libri con funzioni per la gestione dei libri
                 printf("1. Aggiungi libro\n");
                 printf("2. Stampa lista libri\n");
                 printf("3. Modifica libro\n");
@@ -105,7 +105,7 @@ int main(){
 
         case 3:
             do{
-                printf("\n===Menù Prestiti===\n");
+                printf("\n===Menù Prestiti===\n");            //menù secondario prestiti con funzioni per la gestione dei prestiti
                 printf("1. Nuovo prestito\n");
                 printf("2. Restituzione libro\n");
                 printf("3. Stampa lista prestiti scaduti\n");
@@ -139,7 +139,7 @@ int main(){
 
         case 4:
             do{
-                printf("\n===Menù Statistiche===\n");
+                printf("\n===Menù Statistiche===\n");            //menù secondario statistiche con funzioni per la gestione delle statistiche
                 printf("1. Libro più prestato\n");
                 printf("2. Utente con più prestiti\n");
                 printf("3. Visualizza storico prestiti\n");

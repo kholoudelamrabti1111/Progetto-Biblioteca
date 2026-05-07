@@ -24,7 +24,6 @@ typedef struct {
 
 // dichiarazione funzioni
 void inizializzaElenco(ElencoUtenti *elenco);
-void inizializzaCatalogo(ElencoUtenti *elenco);
 void aggiungiUtente(ElencoUtenti *elenco);
 void stampaListaUtenti(ElencoUtenti *elenco);
 void eliminaUtente(ElencoUtenti *elenco);
