@@ -43,8 +43,7 @@ void aggiungiNodoPrestito(Utente *u, int id_libro, char *titolo){
     nuovo->titolo_libro[99] = '\0';                    // aggiunge manualmente il terminatore di stringa nella 99esima posizione
 
     nuovo->data_prestito = time(NULL);                 // registra la data attuale come data di prestito
-    nuovo->data_scadenza = nuovo->data_prestito        // calcola la scadenza
-                           +(30 * 24 * 60 * 60);       // aggiunge 30 giorni espressi in secondi (30g × 24h × 60m × 60s)
+    nuovo->data_scadenza = nuovo->data_prestito+(30 * 24 * 60 * 60);        // calcola la scadenza e aggiunge 30 giorni espressi in secondi (30g × 24h × 60m × 60s)
     nuovo->restituito = 0;                             // flag: 0=libro non ancora restituito
     nuovo->next = u->prestiti;                         // il nuovo nodo punta al vecchio primo nodo (inserimento in testa)
     u->prestiti = nuovo;                               // il puntatore alla lista ora punta al nuovo nodo

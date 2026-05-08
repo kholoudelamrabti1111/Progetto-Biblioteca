@@ -54,145 +54,149 @@ void aggiungiLibro(CatalogoLibri *catalogo) {
     printf("Libro aggiunto con successo (ID: %d)\n", catalogo->libri[catalogo->num - 1].id);  
 }
 
-void stampaListaLibri(CatalogoLibri *catalogo) {  // Funzione che stampa tutti i libri presenti nel catalogo
+// Funzione che stampa tutti i libri del catalogo
+void stampaListaLibri(CatalogoLibri *catalogo) {  
     if (catalogo->num == 0) {                      // Controlla se il catalogo è vuoto
         printf("Nessun libro nel catalogo.\n");    // Avvisa l'utente che non ci sono libri
-        return;                                     // Esce anticipatamente dalla funzione
+        return;                                     
     }
 
-    for (int i = 0; i < catalogo->num; i++) {     // Itera su tutti i libri presenti nel catalogo
-        Libro *l = &catalogo->libri[i];            // Ottiene il puntatore al libro i-esimo per evitare copie inutili
+    for (int i = 0; i < catalogo->num; i++) {     
+        Libro *l = &catalogo->libri[i];            // Ottiene il puntatore al libro corrente
         printf("ID: %d | Titolo: %s | Autore: %s | Genere: %s | Copie: %d/%d\n",
                l->id, l->titolo, l->autore, l->genere,
-               l->copie_disponibili, l->copie_totali);  // Stampa tutti i campi del libro formattati
+               l->copie_disponibili, l->copie_totali);  // Stampa campi del libro
     }
 }
 
-void modificaLibro(CatalogoLibri *catalogo) { // Funzione per modificare i dati di un libro esistente
-    if (catalogo->num == 0) {                     // Controlla se il catalogo è vuoto
-        printf("Nessun libro nel catalogo.\n");  // Avvisa l'utente che non ci sono libri da modificare
-        return;                                    // Esce anticipatamente dalla funzione
+// Funzione per modificare i dati di un libro esistente
+void modificaLibro(CatalogoLibri *catalogo) { 
+    if (catalogo->num == 0) {                     
+        printf("Nessun libro nel catalogo.\n");  
+        return;                                    
     }
 
-    int id;                                        // Variabile per memorizzare l'ID del libro da modificare
-    printf("ID del libro da modificare: ");      // Chiede all'utente l'ID del libro
-    scanf("%d", &id);                             // Legge l'ID inserito dall'utente
+    int id;                                        
+    printf("ID del libro da modificare: ");      // Chiede all'utente l'ID del libro da modificare
+    scanf("%d", &id);                             
 
-                                                   // Cerca il libro con l'ID specificato
-    Libro *l = NULL;                              // Inizializza il puntatore a NULL (libro non trovato per default)
-    for (int i = 0; i < catalogo->num; i++) {    // Scorre tutti i libri del catalogo
-        if (catalogo->libri[i].id == id) {       // Confronta l'ID del libro corrente con quello cercato
-            l = &catalogo->libri[i];              // Salva il puntatore al libro trovato
-            break;                                 // Interrompe il ciclo perché il libro è stato trovato
+                                                   
+    Libro *l = NULL;                              // Inizializza il puntatore a NULL 
+    for (int i = 0; i < catalogo->num; i++) {    
+        if (catalogo->libri[i].id == id) {       // Confronta gli ID
+            l = &catalogo->libri[i];              // Salva il puntatore
+            break;                                 
         }
     }
-    if (l == NULL) {                              // Se il puntatore è ancora NULL, il libro non è stato trovato
-        printf("Libro non trovato.\n");          // Informa l'utente
-        return;                                    // Esce dalla funzione
+    if (l == NULL) {                              
+        printf("Libro non trovato.\n");          
+        return;                                    
     }
 
-    char buf[256];                                // Buffer per leggere il nuovo valore dall'utente
-    int scelta;                                    // Variabile per memorizzare la scelta del campo da modificare
-    printf("Cosa vuoi modificare?\n");           // Mostra il menu di modifica
-    printf("1. Titolo\n2. Autore\n3. Genere\n4. Copie totali\n");  // Elenca le opzioni disponibili
-    printf("Scelta: ");                           // Chiede la scelta all'utente
-    scanf("%d", &scelta);                         // Legge la scelta dell'utente
+    char buf[256];                                
+    int scelta;                                    
+    printf("Cosa vuoi modificare?\n");           
+    printf("1. Titolo\n2. Autore\n3. Genere\n4. Copie totali\n");  
+    printf("Scelta: ");                           
+    scanf("%d", &scelta);                         
 
-    switch (scelta) {                             // Esegue l'azione in base al campo scelto
+    switch (scelta) {                             
         case 1:                                    // Modifica il titolo
             printf("Nuovo titolo: ");             // Chiede il nuovo titolo
-            scanf(" %[^\n]", buf);                // Legge il nuovo valore inclusi gli spazi
-            free(l->titolo);                      // Libera la vecchia stringa prima di sovrascriverla per evitare memory leak
+            scanf(" %[^\n]", buf);                
+            free(l->titolo);                      // Libera la vecchia stringa prima di sovrascriverla
             l->titolo = duplicaStringa(buf);      // Assegna la nuova stringa duplicata al campo titolo
-            break;                                 // Esce dallo switch
+            break;                                 
         case 2:                                    // Modifica l'autore
             printf("Nuovo autore: ");             // Chiede il nuovo autore
-            scanf(" %[^\n]", buf);                // Legge il nuovo valore
+            scanf(" %[^\n]", buf);                
             free(l->autore);                      // Libera la memoria del vecchio autore
             l->autore = duplicaStringa(buf);      // Assegna il nuovo autore
-            break;                                 // Esce dallo switch
+            break;                                 
         case 3:                                    // Modifica il genere
             printf("Nuovo genere: ");             // Chiede il nuovo genere
-            scanf(" %[^\n]", buf);                // Legge il nuovo valore
+            scanf(" %[^\n]", buf);                
             free(l->genere);                      // Libera la memoria del vecchio genere
             l->genere = duplicaStringa(buf);      // Assegna il nuovo genere
-            break;                                 // Esce dallo switch
+            break;                                 
         case 4:                                    // Modifica il numero di copie totali
             printf("Nuove copie totali: ");       // Chiede il nuovo numero di copie
             scanf("%d", &l->copie_totali);        // Legge e aggiorna direttamente il campo copie_totali
-            break;                                 // Esce dallo switch
-        default:                                   // Gestisce qualsiasi scelta non valida
-            printf("Scelta non valida.\n");      // Avvisa l'utente
-            return;                                // Esce dalla funzione senza modificare nulla
+            break;                                 
+        default:                                   
+            printf("Scelta non valida.\n");      
+            return;                                
     }
     printf("Libro modificato con successo.\n");  // Conferma la modifica avvenuta con successo
 }
 
-void eliminaLibro(CatalogoLibri *catalogo) {  // Funzione per rimuovere un libro dal catalogo
-    if (catalogo->num == 0) {                   // Controlla se il catalogo è vuoto
-        printf("Nessun libro nel catalogo.\n");// Avvisa che non ci sono libri da eliminare
-        return;                                  // Esce dalla funzione
+// Funzione per rimuovere un libro dal catalogo
+void eliminaLibro(CatalogoLibri *catalogo) {  
+    if (catalogo->num == 0) {                   
+        printf("Nessun libro nel catalogo.\n");
+        return;                                  
     }
 
-    int id;                                      // Variabile per memorizzare l'ID del libro da eliminare
-    printf("ID del libro da eliminare: ");     // Chiede l'ID all'utente
-    scanf("%d", &id);                           // Legge l'ID inserito
+    int id;                                      
+    printf("ID del libro da eliminare: ");     
+    scanf("%d", &id);                           
 
-                                                 // Cerca la posizione del libro nell'array
+                                                 
     int pos = -1;                               // Inizializza la posizione a -1 (non trovato)
-    for (int i = 0; i < catalogo->num; i++) {  // Scorre tutti i libri
+    for (int i = 0; i < catalogo->num; i++) {  
         if (catalogo->libri[i].id == id) {     // Controlla se l'ID corrisponde
             pos = i;                             // Salva l'indice del libro trovato
-            break;                               // Interrompe la ricerca
+            break;                             
         }
     }
-    if (pos == -1) {                            // Se pos è ancora -1, il libro non è stato trovato
-        printf("Libro non trovato.\n");        // Avvisa l'utente
-        return;                                  // Esce dalla funzione
+    if (pos == -1) {                            // Se pos è ancora -1 il libro non è stato trovato
+        printf("Libro non trovato.\n");       
+        return;                                  
     }
 
-                                                 // Libera la memoria delle stringhe allocate dinamicamente
-    free(catalogo->libri[pos].titolo);          // Dealloca la stringa titolo del libro da eliminare
-    free(catalogo->libri[pos].autore);          // Dealloca la stringa autore del libro da eliminare
-    free(catalogo->libri[pos].genere);          // Dealloca la stringa genere del libro da eliminare
+                                        
+    free(catalogo->libri[pos].titolo);          
+    free(catalogo->libri[pos].autore);          
+    free(catalogo->libri[pos].genere);         
 
-                                                 // Sposta tutti i libri successivi di una posizione indietro per compattare l'array
-    for (int i = pos; i < catalogo->num - 1; i++)  // Itera dalla posizione eliminata fino al penultimo elemento
-        catalogo->libri[i] = catalogo->libri[i + 1];  // Sovrascrive ogni elemento con quello successivo (copia per valore)
+// Sposta tutti i libri successivi di una posizione indietro per compattare l'array
+    for (int i = pos; i < catalogo->num - 1; i++)  
+        catalogo->libri[i] = catalogo->libri[i + 1];  // Sovrascrive ogni elemento con quello successivo
 
     catalogo->num--;                             // Decrementa il contatore dei libri presenti
-    printf("Libro eliminato con successo.\n"); // Conferma l'eliminazione
+    printf("Libro eliminato con successo.\n"); 
 }
 
-void ricercaLibro(CatalogoLibri *catalogo) {  // Funzione per cercare libri nel catalogo in base a una parola chiave
-    if (catalogo->num == 0) {                  // Controlla se il catalogo è vuoto
-        printf("Nessun libro nel catalogo.\n"); // Avvisa che non ci sono libri da cercare
-        return;                                 // Esce dalla funzione
+// Funzione per cercare libri nel catalogo 
+void ricercaLibro(CatalogoLibri *catalogo) {  
+    if (catalogo->num == 0) {                  
+        printf("Nessun libro nel catalogo.\n"); 
+        return;                                 
     }
 
-    int scelta;                                 // Variabile per il tipo di campo su cui effettuare la ricerca
-    char buf[256];                              // Buffer per la parola chiave di ricerca
-    printf("Cerca per:\n1. Titolo\n2. Autore\n3. Genere\n");  // Mostra le opzioni di ricerca
-    printf("Scelta: ");                        // Chiede la scelta all'utente
-    scanf("%d", &scelta);                      // Legge la scelta
+    int scelta;                                 
+    char buf[256];                              
+    printf("Cerca per:\n1. Titolo\n2. Autore\n3. Genere\n");
+    printf("Scelta: ");                        
+    scanf("%d", &scelta);                      
 
-    printf("Parola chiave: ");                 // Chiede la parola chiave di ricerca
-    scanf(" %[^\n]", buf);                     // Legge la parola chiave inclusi gli spazi
+    printf("Parola chiave: ");                 
+    scanf(" %[^\n]", buf);                     
 
-    int trovati = 0;                            // Contatore dei libri trovati, inizializzato a 0
-    for (int i = 0; i < catalogo->num; i++) { // Scorre tutti i libri del catalogo
+    int trovati = 0;                            
+    for (int i = 0; i < catalogo->num; i++) { 
         Libro *l = &catalogo->libri[i];        // Puntatore al libro corrente
-        char *campo = NULL;                     // Puntatore al campo su cui cercare, inizializzato a NULL
+        char *campo = NULL;                     // Puntatore al campo su cui cercare
 
-                                                // Seleziona il campo su cui effettuare la ricerca
-        switch (scelta) {                       // In base alla scelta dell'utente
-            case 1: campo = l->titolo; break;  // Imposta campo al titolo del libro
-            case 2: campo = l->autore; break;  // Imposta campo all'autore del libro
-            case 3: campo = l->genere; break;  // Imposta campo al genere del libro
-            default: printf("Scelta non valida.\n"); return;  // Scelta non valida: avvisa ed esce
+        // Seleziona il campo su cui effettuare la ricerca
+        switch (scelta) {                       
+            case 1: campo = l->titolo; break;  
+            case 2: campo = l->autore; break; 
+            case 3: campo = l->genere; break; 
+            default: printf("Scelta non valida.\n"); return;  
         }
 
-                                                // strstr restituisce NULL se la parola chiave non è presente nel campo
+        // strstr restituisce NULL se la parola chiave non è stata trovata
         if (strstr(campo, buf) != NULL) {      // Cerca la parola chiave all'interno del campo selezionato
             printf("ID: %d | %s | %s | %s | copie: %d/%d\n",
                    l->id, l->titolo, l->autore, l->genere,
@@ -202,7 +206,7 @@ void ricercaLibro(CatalogoLibri *catalogo) {  // Funzione per cercare libri nel 
     }
 
     if (trovati == 0)                          // Se non è stato trovato nessun libro
-        printf("Nessun libro trovato.\n");    // Avvisa l'utente
-    else                                        // Altrimenti
+        printf("Nessun libro trovato.\n");    
+    else                                       
         printf("\n%d libro/i trovato/i.\n", trovati);  // Stampa il numero totale di libri trovati
 }
