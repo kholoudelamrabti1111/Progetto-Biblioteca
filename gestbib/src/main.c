@@ -163,11 +163,11 @@ int main(){
                         break;
 
                     case 4:
-                        tassoRestituzione(&catalogo);
+                        tassoRestituzione(&elenco);
                         break;
 
                     case 5:
-                        generiPiuRichiesti(&catalogo);
+                        generiPiuRichiesti(&catalogo, &elenco);
                         break;
 
                     case 0:

@@ -80,21 +80,146 @@ void stampaBarra(int valore, int scala) {                                 // Fun
 }
 
 void libroPiuPrestato(CatalogoLibri *catalogo, ElencoUtenti *elenco) {
-    printf("Funzione libroPiuPrestato non implementata.\n");
+    if (catalogo->num == 0 || elenco->num == 0) {
+        printf("Nessun dato disponibile.\n");
+        return;
+    }
+
+    int max = 0;
+    int idx = -1;
+
+    // per ogni libro conta quante volte è stato prestato
+    for (int j = 0; j < catalogo->num; j++) {
+        int contatore = 0;
+
+        for (int i = 0; i < elenco->num; i++) {
+            for (NodoPrestito *nodo = elenco->utenti[i].prestiti; nodo != NULL; nodo = nodo->next) {
+                if (nodo->id_libro == catalogo->libri[j].id)
+                    contatore++;
+            }
+        }
+
+        if (contatore > max) {
+            max = contatore;
+            idx = j;
+        }
+    }
+
+    if (idx == -1 || max == 0) {
+        printf("Nessun prestito registrato.\n");
+    } else {
+        printf("\n--- Libro piu' prestato ---\n");
+        printf("Titolo : %s\n", catalogo->libri[idx].titolo);
+        printf("Autore : %s\n", catalogo->libri[idx].autore);
+        printf("Prestiti totali: %d\n", max);
+    }
 }
 
 void utentePiuPrestiti(ElencoUtenti *elenco) {
-    printf("Funzione utentePiuPrestiti non implementata.\n");
+    if (elenco->num == 0) {
+        printf("Nessun utente presente.\n");
+        return;
+    }
+
+    int max = 0;
+    int idx = -1;
+
+    // per ogni utente conta i prestiti nella lista collegata
+    for (int i = 0; i < elenco->num; i++) {
+        int contatore = 0;
+
+        for (NodoPrestito *nodo = elenco->utenti[i].prestiti; nodo != NULL; nodo = nodo->next)
+            contatore++;
+
+        if (contatore > max) {
+            max = contatore;
+            idx = i;
+        }
+    }
+
+    if (idx == -1 || max == 0) {
+        printf("Nessun prestito registrato.\n");
+    } else {
+        printf("\n--- Utente con piu' prestiti ---\n");
+        printf("Nome    : %s %s\n", elenco->utenti[idx].nome, elenco->utenti[idx].cognome);
+        printf("Email   : %s\n", elenco->utenti[idx].email);
+        printf("Prestiti totali: %d\n", max);
+    }
 }
 
 void storicoPrestiti(ElencoUtenti *elenco) {
-    printf("Funzione storicoPrestiti non implementata.\n");
+    if (elenco->num == 0) {
+        printf("Nessun utente presente.\n");
+        return;
+    }
+
+    printf("\n--- Storico Prestiti ---\n");
+
+    for (int i = 0; i < elenco->num; i++) {
+        Utente *u = &elenco->utenti[i];
+
+        printf("\n%s %s:\n", u->nome, u->cognome);
+
+        if (u->prestiti == NULL) {
+            printf("  Nessun prestito.\n");
+            continue;
+        }
+
+        for (NodoPrestito *nodo = u->prestiti; nodo != NULL; nodo = nodo->next) {
+            printf("  - %-30s | Prestito: ", nodo->titolo_libro);
+            stampData(nodo->data_prestito);
+            printf(" | Scadenza: ");
+            stampData(nodo->data_scadenza);
+            printf(" | %s\n", nodo->restituito ? "Restituito" : "In corso");
+        }
+    }
 }
 
-void tassoRestituzione(CatalogoLibri *catalogo) {
-    printf("Funzione tassoRestituzione non implementata.\n");
+void tassoRestituzione(ElencoUtenti *elenco) {
+    int totali = 0;
+    int restituiti = 0;
+
+    for (int i = 0; i < elenco->num; i++) {
+        for (NodoPrestito *nodo = elenco->utenti[i].prestiti; nodo != NULL; nodo = nodo->next) {
+            totali++;
+            if (nodo->restituito)
+                restituiti++;
+        }
+    }
+
+    if (totali == 0) {
+        printf("Nessun prestito registrato.\n");
+        return;
+    }
+
+    float tasso = (float)restituiti / totali * 100;
+
+    printf("\n--- Tasso di Restituzione ---\n");
+    printf("Prestiti totali  : %d\n", totali);
+    printf("Restituiti       : %d\n", restituiti);
+    printf("Non restituiti   : %d\n", totali - restituiti);
+    printf("Tasso            : %.1f%%\n", tasso);
 }
 
-void generiPiuRichiesti(CatalogoLibri *catalogo) {
-    printf("Funzione generiPiuRichiesti non implementata.\n");
+void generiPiuRichiesti(CatalogoLibri *catalogo, ElencoUtenti *elenco) {
+    if (catalogo->num == 0 || elenco->num == 0) {
+        printf("Nessun dato disponibile.\n");
+        return;
+    }
+
+    printf("\n--- Generi piu' richiesti ---\n");
+
+    // per ogni genere conta quante volte è stato prestato
+    for (int j = 0; j < catalogo->num; j++) {
+        int contatore = 0;
+
+        for (int i = 0; i < elenco->num; i++) {
+            for (NodoPrestito *nodo = elenco->utenti[i].prestiti; nodo != NULL; nodo = nodo->next) {
+                if (nodo->id_libro == catalogo->libri[j].id)
+                    contatore++;
+            }
+        }
+
+        printf("%-20s : %d prestiti\n", catalogo->libri[j].genere, contatore);
+    }
 }
