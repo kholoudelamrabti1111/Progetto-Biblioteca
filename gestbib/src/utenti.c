@@ -54,7 +54,7 @@ void stampaListaUtenti(ElencoUtenti *elenco){
     for(int i=0; i< elenco->num; i++){ 
         printf("ID: %d, Nome: %s, Cognome: %s, Email: %s\n", elenco->utenti[i].id, elenco->utenti[i].nome, elenco->utenti[i].cognome, elenco->utenti[i].email); //Stampa i dettagli dell'utente
 
-        NodoPrestito* corrente = elenco->utenti[i].prestiti; //Puntatore al primo prestito dell'utente
+        NodoPrestito* corrente = elenco->utenti[i].prestiti;        //Puntatore al primo prestito dell'utente
         
         if(corrente == NULL){ 
             printf("  Nessun prestito per questo utente.\n"); 
@@ -62,9 +62,9 @@ void stampaListaUtenti(ElencoUtenti *elenco){
             printf("  Prestiti:\n"); 
             while(corrente != NULL){ 
                 printf(" - Titolo: %s, Data di prestito: ", corrente->titolo_libro); // Stampa il titolo del libro prestato
-                stampData(corrente->data_prestito); //funzione per stampare la data
+                stampData(corrente->data_prestito);                 //funzione per stampare la data
                 printf("\n");
-                corrente = corrente->next; // Passa al prestito successivo
+                corrente = corrente->next;                          // Passa al prestito successivo
             }
         }
     }
@@ -77,7 +77,7 @@ void eliminaUtente(ElencoUtenti *elenco){
     printf("ID dell'utente da eliminare: ");
     scanf("%d", &idCercato);                         
     
-    int pos = -1;                         //Inizializza la posizione a -1 (non trovata)
+    int pos = -1;                           //Inizializza la posizione a -1 (non trovata)
 
     // Trova posizione dell'utente
     for(int i=0; i<elenco->num; i++){ 

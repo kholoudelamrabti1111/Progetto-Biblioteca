@@ -4,6 +4,7 @@
 #include "../include/utenti.h"
 #include "../include/prestiti.h"
 #include "../include/utils.h"
+#include "../include/file_io.h" /* Aggiunto per le funzioni di salvataggio e caricamento CSV */
 
 int main(){
     int scelta=0, scelta_utente=0,scelta_libri=0,scelta_prestiti=0, scelta_statistiche;
@@ -11,8 +12,16 @@ int main(){
     inizializzaCatalogo(&catalogo);
     ElencoUtenti elenco;
     inizializzaElenco(&elenco);
+
+    /* Caricamento dati all'avvio: prima utenti, poi prestiti (caricaPrestiti cerca gli utenti in memoria) */
+    printf("Caricamento dati in corso...\n");
+    caricaLibri(&catalogo);
+    caricaUtenti(&elenco);
+    caricaPrestiti(&elenco); /* Va chiamata DOPO caricaUtenti */
+    printf("Dati caricati: %d libri, %d utenti.\n", catalogo.num, elenco.num);
+
     do{
-        printf("\n---- Menù Biblioteca ----\n");            //menù biblioteca principale con collegamenti a menù secondari
+        printf("\n---- Menù Biblioteca ----\n");
         printf("In che menù vuoi andare?\n");
         printf("1. Menù Utenti\n");
         printf("2. Menù Libri\n");
@@ -22,12 +31,11 @@ int main(){
         printf("Scelta: ");
         scanf("%d", &scelta);
 
-
         switch(scelta){
 
         case 1:
             do{
-                printf("\n===Menù Utenti===\n");            //menù secondario utenti con funzioni per la gestione utenti
+                printf("\n===Menù Utenti===\n");
                 printf("1. Aggiungi utente\n");
                 printf("2. Stampa lista utenti\n");
                 printf("3. Eliminazione utente\n");
@@ -38,6 +46,7 @@ int main(){
                 switch(scelta_utente){
                     case 1:
                         aggiungiUtente(&elenco);
+                        salvaUtenti(&elenco); /* Salva subito dopo ogni modifica */
                         break;
 
                     case 2:
@@ -46,6 +55,8 @@ int main(){
 
                     case 3:
                         eliminaUtente(&elenco);
+                        salvaUtenti(&elenco); /* Salva subito dopo ogni modifica */
+                        salvaPrestiti(&elenco); /* Salva anche i prestiti perché l'utente eliminato non deve più comparire */
                         break;
 
                     case 0:
@@ -61,7 +72,7 @@ int main(){
 
         case 2:
             do{
-                printf("\n===Menù Libri===\n");            //menù secondario libri con funzioni per la gestione dei libri
+                printf("\n===Menù Libri===\n");
                 printf("1. Aggiungi libro\n");
                 printf("2. Stampa lista libri\n");
                 printf("3. Modifica libro\n");
@@ -74,6 +85,7 @@ int main(){
                 switch(scelta_libri){
                     case 1:
                         aggiungiLibro(&catalogo);
+                        salvaLibri(&catalogo); /* Salva subito dopo ogni modifica */
                         break;
 
                     case 2:
@@ -82,10 +94,12 @@ int main(){
 
                     case 3:
                         modificaLibro(&catalogo);
+                        salvaLibri(&catalogo); /* Salva subito dopo ogni modifica */
                         break;
 
                     case 4:
                         eliminaLibro(&catalogo);
+                        salvaLibri(&catalogo); /* Salva subito dopo ogni modifica */
                         break;
 
                     case 5:
@@ -105,7 +119,7 @@ int main(){
 
         case 3:
             do{
-                printf("\n===Menù Prestiti===\n");            //menù secondario prestiti con funzioni per la gestione dei prestiti
+                printf("\n===Menù Prestiti===\n");
                 printf("1. Nuovo prestito\n");
                 printf("2. Restituzione libro\n");
                 printf("3. Stampa lista prestiti scaduti\n");
@@ -116,10 +130,14 @@ int main(){
                 switch(scelta_prestiti){
                     case 1:
                         nuovoPrestito(&catalogo, &elenco);
+                        salvaPrestiti(&elenco); /* Salva subito dopo ogni modifica */
+                        salvaLibri(&catalogo);  /* Salva anche i libri perché le copie disponibili cambiano */
                         break;
 
                     case 2:
                         restituzioneLibro(&catalogo, &elenco);
+                        salvaPrestiti(&elenco); /* Salva subito dopo ogni modifica */
+                        salvaLibri(&catalogo);  /* Salva anche i libri perché le copie disponibili cambiano */
                         break;
 
                     case 3:
@@ -139,7 +157,7 @@ int main(){
 
         case 4:
             do{
-                printf("\n===Menù Statistiche===\n");            //menù secondario statistiche con funzioni per la gestione delle statistiche
+                printf("\n===Menù Statistiche===\n");
                 printf("1. Libro più prestato\n");
                 printf("2. Utente con più prestiti\n");
                 printf("3. Visualizza storico prestiti\n");
@@ -159,7 +177,7 @@ int main(){
                         break;
 
                     case 3:
-                        storicoPrestiti(&elenco );
+                        storicoPrestiti(&elenco);
                         break;
 
                     case 4:
@@ -182,7 +200,12 @@ int main(){
             break;
 
         case 0:
-            printf("\nSei uscito dal programma.\n");
+            /* Salvataggio finale di sicurezza all'uscita */
+            printf("\nSalvataggio dati in corso...\n");
+            salvaLibri(&catalogo);
+            salvaUtenti(&elenco);
+            salvaPrestiti(&elenco);
+            printf("Dati salvati. Arrivederci!\n");
             break;
 
         default:
