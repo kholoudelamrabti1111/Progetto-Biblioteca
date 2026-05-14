@@ -103,66 +103,51 @@ void caricaUtenti(ElencoUtenti *elenco) {
     while (fgets(linea, sizeof(linea), fp)) {
         linea[strcspn(linea, "\n")] = '\0';
 
-        // Analizza la riga: estrae ID, stringhe fino a 49 caratteri per nome e cognome, 
-        // e fino a 99 caratteri per l'email (escludendo il carattere di a capo finale)
+        // estrae ID, stringhe fino a 49 caratteri per nome e cognome e fino a 99 caratteri per l'email
         if (sscanf(linea, "%d,%49[^,],%49[^,],%99[^\n]",
                    &id, nome, cognome, email) != 4)
-            // Se non vengono identificati tutti e 4 i campi richiesti, passa alla riga successiva
+            // Se non vengono identificati tutti e 4 i campi richiesti passa alla riga successiva
             continue;
 
-        // Se l'array degli utenti è pieno, espande lo spazio disponibile
+        // Se l'array degli utenti è pieno espande lo spazio disponibile
         if (elenco->num == elenco->capacita) {
-            // Raddoppia la capacità massima dichiarata nell'elenco
+            // Raddoppia la capacità massima dell'elenco
             elenco->capacita *= 2;
-            // Modifica la dimensione della memoria allocata per l'array degli utenti
+            // Modifica la dimensione allocata per l'array degli utenti
             elenco->utenti = realloc(elenco->utenti,
                                      elenco->capacita * sizeof(Utente));
         }
 
-        // Definisce il puntatore per il nuovo utente nella posizione corrente dell'elenco
-        Utente *u       = &elenco->utenti[elenco->num];
-        // Assegna l'ID estratto
-        u->id           = id;
-        // Inizializza il puntatore della lista collegata dei prestiti a NULL (vuota)
-        u->prestiti     = NULL;       
-        // Imposta a 0 il numero di prestiti attivi per questo utente
-        u->num_prestiti = 0;
+        Utente *u=&elenco->utenti[elenco->num];             // Definisce il puntatore per il nuovo utente nella posizione corrente dell'elenco
+        u->id=id;
+        u->prestiti=NULL;       
+        u->num_prestiti=0;
         
-        // Copia in modo sicuro le stringhe nei vettori a dimensione fissa della struttura Utente.
-        // sizeof(campo) - 1 garantisce che rimanga sempre spazio per il carattere terminatore \0.
-        strncpy(u->nome,    nome,    sizeof(u->nome)    - 1);
-        strncpy(u->cognome, cognome, sizeof(u->cognome) - 1);
-        strncpy(u->email,   email,   sizeof(u->email)   - 1);
+        strncpy(u->nome,nome,sizeof(u->nome)-1);            // sizeof(###)-1 fa rimanere sempre spazio per \0
+        strncpy(u->cognome,cognome, sizeof(u->cognome)-1);
+        strncpy(u->email,email,sizeof(u->email)-1);
         
-        // Incrementa il contatore degli utenti totali inseriti nell'elenco
         elenco->num++;
     }
 
-    // Chiude il file al termine della lettura
     fclose(fp);
 }
 
 // Esporta tutti i prestiti attivi e passati nel file CSV
 void salvaPrestiti(ElencoUtenti *elenco) {
-    // Apre il file dei prestiti in modalità scrittura ("w")
     FILE *fp = fopen(FILE_PRESTITI, "w");
-    // Se l'apertura fallisce, stampa il messaggio di errore ed esce
+
     if (!fp) {
         printf("Errore: impossibile aprire %s per la scrittura.\n", FILE_PRESTITI);
         return;
     }
 
-    // Scorre l'elenco di tutti gli utenti registrati nel sistema
     for (int i = 0; i < elenco->num; i++) {
-        // Punta all'utente corrente
         Utente *u = &elenco->utenti[i];
         
-        // Scorre la lista collegata dei prestiti dell'utente partendo dalla testa (u->prestiti)
-        // Continua finché il puntatore al nodo corrente non diventa NULL
         for (NodoPrestito *nodo = u->prestiti; nodo != NULL; nodo = nodo->next) {
             // Salva nel file i dati convertendo i timestamp time_t in tipo long int
-            // Campi: id_utente, id_libro, titolo_libro, data_prestito, data_scadenza, stato_restituito
-            fprintf(fp, "%d,%d,%s,%ld,%ld,%d\n",
+            fprintf(fp, "%d,%d,%s,%ld,%ld,%d\n",       // Campi: id_utente, id_libro, titolo_libro, data_prestito, data_scadenza, stato_restituito
                     u->id,
                     nodo->id_libro,
                     nodo->titolo_libro,
@@ -172,79 +157,60 @@ void salvaPrestiti(ElencoUtenti *elenco) {
         }
     }
 
-    // Chiude il file scrivendo i dati su disco
     fclose(fp);
 }
 
 // Carica i prestiti dal CSV e li associa agli utenti esistenti
 void caricaPrestiti(ElencoUtenti *elenco) {
-    // Apre il file dei prestiti in modalità sola lettura ("r")
     FILE *fp = fopen(FILE_PRESTITI, "r");
-    // Se il file non esiste, termina subito la funzione
+
     if (!fp) return;
 
-    // Buffer per la lettura della riga di testo
     char linea[512];
-    // Variabili per i dati estratti dal file
     int id_utente, id_libro, restituito;
     long data_prestito, data_scadenza;
     char titolo_libro[100];
 
-    // Legge il file riga per riga fino alla fine
     while (fgets(linea, sizeof(linea), fp)) {
-        // Taglia il carattere di a capo finale (\n)
-        linea[strcspn(linea, "\n")] = '\0';
+        linea[strcspn(linea, "\n")] = '\0';                 // elimina il carattere (\n)
 
-        // Estrae i 6 campi descrittivi del prestito verificando l'esattezza della lettura
+        // prende i 6 campi del prestito e verifica l'esattezza della lettura
         if (sscanf(linea, "%d,%d,%99[^,],%ld,%ld,%d",
                    &id_utente, &id_libro, titolo_libro,
                    &data_prestito, &data_scadenza, &restituito) != 6)
-            // Se la riga è corrotta o incompleta, passa alla riga successiva
             continue;
 
-        // Inizializza un puntatore a Utente per cercare il proprietario del prestito
         Utente *u = NULL;
         // Cerca l'utente all'interno dell'elenco confrontando gli ID
         for (int i = 0; i < elenco->num; i++) {
             if (elenco->utenti[i].id == id_utente) {
-                // Se trova corrispondenza, salva il puntatore all'utente trovato
-                u = &elenco->utenti[i];
-                // Interrompe il ciclo di ricerca per ottimizzare i tempi
+                u = &elenco->utenti[i];                      //salva il puntatore all'utente trovato
                 break;
             }
         }
-        // Se l'utente non esiste più nel sistema, ignora il prestito e passa oltre
-        if (!u) continue;
+        
+        if (!u) continue;       // Se l'utente non esiste passa oltre
 
-        // Alloca dinamicamente nello heap la memoria per un nuovo nodo della lista prestiti
-        NodoPrestito *nuovo = malloc(sizeof(NodoPrestito));
-        // Se l'allocazione della memoria fallisce, passa alla riga successiva
+        NodoPrestito *nuovo = malloc(sizeof(NodoPrestito));         // Alloca memoria per un nuovo nodo della lista prestiti
         if (!nuovo) continue;
 
-        // Copia i dati letti dal file all'interno dei campi del nuovo nodo allocato
-        nuovo->id_libro      = id_libro;
-        // Converte i valori numerici long registrati nel file nel tipo nativo time_t
-        nuovo->data_prestito = (time_t)data_prestito;
-        nuovo->data_scadenza = (time_t)data_scadenza;
-        nuovo->restituito    = restituito;
+        nuovo->id_libro=id_libro;       // Copia i dati 
+        // Converte i valori numerici long registrati nel file nel tipo time_t
+        nuovo->data_prestito=(time_t)data_prestito;
+        nuovo->data_scadenza=(time_t)data_scadenza;
+        nuovo->restituito=restituito;
         
-        // Copia in sicurezza il titolo del libro nel vettore del nodo (massimo 99 caratteri)
+        // Copia il titolo del libro
         strncpy(nuovo->titolo_libro, titolo_libro, 99);
-        // Inserisce forzatamente il terminatore di stringa nell'ultimo byte disponibile
-        nuovo->titolo_libro[99] = '\0';
+        nuovo->titolo_libro[99] = '\0';     // Inserisce il terminatore di stringa nell'ultimo byte
 
-        // Logica di inserimento in testa alla lista collegata dell'utente:
-        // Il nuovo nodo punta alla vecchia testa della lista prestiti dell'utente
-        nuovo->next = u->prestiti;
-        // Il puntatore di testa dell'utente diventa adesso il nuovo nodo appena creato
-        u->prestiti = nuovo;
+        nuovo->next = u->prestiti;  // il nuovo nodo punta alla vecchia testa della lista prestiti dell'utente
+        u->prestiti = nuovo;        // il puntatore di testa dell utente diventa adesso il nuovo nodo appena creato
         
-        // Se il flag 'restituito' è uguale a 0 (ovvero il libro è ancora in prestito)
+        // Se il flag è uguale a 0 incrementa
         if (!restituito) 
-            // Incrementa il numero dei prestiti attivi in carico a questo utente
             u->num_prestiti++;
     }
 
-    // Chiude il file dopo aver completato l'intero caricamento
     fclose(fp);
 }
