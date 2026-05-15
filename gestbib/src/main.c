@@ -32,7 +32,6 @@ int main(){
         scanf("%d", &scelta);
 
         switch(scelta){
-
         case 1:
             do{
                 printf("\n===Menù Utenti===\n");

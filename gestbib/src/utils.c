@@ -179,17 +179,17 @@ void storicoPrestiti(ElencoUtenti *elenco) {
         // Controlla prestiti
         if (u->prestiti == NULL) {
             printf(" Nessun prestito.\n");
-            continue;                                                   // Salta al prossimo utente se non ci sono prestiti
+        } else {
+            // Attraversa la lista collegata dei prestiti e stampa 
+            for (NodoPrestito *nodo = u->prestiti; nodo != NULL; nodo = nodo->next) {
+                printf(" - %-30s | Prestito: ", nodo->titolo_libro);        // Stampa il titolo del libro con larghezza fissa
+                stampData(nodo->data_prestito); 
+                printf(" | Scadenza: ");
+                stampData(nodo->data_scadenza); 
+                printf(" | %s\n", nodo->restituito ? "Restituito" : "In corso");        // Indica se il libro è già stato restituito
+            }
         }
-
-        // Atraversa la lista collegata dei prestiti e stampa 
-        for (NodoPrestito *nodo = u->prestiti; nodo != NULL; nodo = nodo->next) {
-            printf(" - %-30s | Prestito: ", nodo->titolo_libro);        // Stampa il titolo del libro con larghezza fissa
-            stampData(nodo->data_prestito); 
-            printf(" | Scadenza: ");
-            stampData(nodo->data_scadenza); 
-            printf(" | %s\n", nodo->restituito ? "Restituito" : "In corso");        // Indica se il libro è già stato restituito
-        }
+        // Se la lista prestiti è vuota, il ciclo ignora il blocco else e passa al prossimo utente
     }
 }
 
